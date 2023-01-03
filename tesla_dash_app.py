@@ -14,7 +14,7 @@ import yfinance as yf
 #Initiate the app
 server=Flask(__name__)
 app=dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.UNITED, dbc.icons.BOOTSTRAP])
-#server=app.server
+server=app.server
 #for running on render
 
 
