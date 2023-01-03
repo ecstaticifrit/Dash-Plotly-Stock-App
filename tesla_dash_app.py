@@ -241,4 +241,4 @@ def update_output(selected_stock):
 
 
 #Run app
-app.run_server(debug=True)#True/False
+app.run_server(debug=False)#True/False
