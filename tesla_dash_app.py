@@ -22,7 +22,6 @@ server=app.server
 data = yf.Ticker("TSLA")
 df = data.history(period="max")
 df.reset_index(inplace=True)
-df.head()
 df['Year'] = pd.DatetimeIndex(df['Date']).year
 df['Month'] = pd.DatetimeIndex(df['Date']).month
 
@@ -161,7 +160,6 @@ def update_graph(x_axis, selected_year, selected_month, selected_stock):
     data = yf.Ticker(selected_stock)
     df = data.history(period="max")
     df.reset_index(inplace=True)
-    df.head()
     df['Year'] = pd.DatetimeIndex(df['Date']).year
     df['Month'] = pd.DatetimeIndex(df['Date']).month
 
