@@ -4,6 +4,7 @@ from dash import dcc, html, Input, Output
 import dash_bootstrap_components as dbc
 from flask import Flask
 import plotly.express as px
+import dash_daq as daq
 import pandas as pd
 import numpy as np
 import requests
@@ -13,7 +14,8 @@ import yfinance as yf
 #Initiate the app
 server=Flask(__name__)
 app=dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.UNITED, dbc.icons.BOOTSTRAP])
-server=app.server
+#server=app.server
+#for running on render
 
 
 #Read the files
@@ -40,8 +42,8 @@ year_options=df['Year'].unique()
 #Design Layout
 app.layout=html.Div([
     dbc.Row([header_component]),
-    dbc.Row([dbc.Col([html.H3("Choose Year", style={'color':'darkcyan', 'text-align':'left', 'font-size':'30px'})]),
-            dbc.Col([html.H3("Choose Month", style={'color':'darkcyan', 'text-align':'left', 'font-size':'30px'})])]),
+    dbc.Row([dbc.Col([html.H2("Choose Year", style={'color':'darkcyan', 'text-align':'left', 'font-size':'30px'})]),
+            dbc.Col([html.H2("Choose Month", style={'color':'darkcyan', 'text-align':'left', 'font-size':'30px'})])]),
 
     dbc.Row([dbc.Col([dcc.Checklist(["All Years"], [], id="year-all-checklist", inline=True),
                 dcc.Checklist(year_options, [], id="year-checklist", inline=True)]),
@@ -75,7 +77,37 @@ app.layout=html.Div([
         )
     ]),
 
-    dbc.Row(dcc.Graph(id='line-graph'))
+    dbc.Row(dcc.Graph(id='line-graph')),
+
+    dbc.Row([html.H3("At a Glance", style={'color':'darkcyan', 'text-align':'center', 'font-size':'36px'})]),
+
+    dbc.Row([
+        dbc.Col([daq.LEDDisplay(
+        id='open',
+        label="Open",
+        value=df['Open'].values[-1]
+    )]),
+        dbc.Col([daq.LEDDisplay(
+        id='high',
+        label="High",
+        value=df['High'].values[-1]
+    )]),
+        dbc.Col([daq.LEDDisplay(
+        id='low',
+        label="Low",
+        value=df['Low'].values[-1]
+    )]),
+        dbc.Col([daq.LEDDisplay(
+        id='close',
+        label="Close",
+        value=df['Close'].values[-1]
+    )]),
+        dbc.Col([daq.LEDDisplay(
+        id='volume',
+        label="Volume",
+        value=df['Volume'].values[-1]
+    )])
+    ])
 ])
 
 
@@ -141,7 +173,74 @@ def update_graph(x_axis, selected_year, selected_month, selected_stock):
 
 
 
+#Callback for Open Values
+@app.callback(
+    Output('open', 'value'),
+    Input('stock-dropdown', 'value')
+)
+def update_output(selected_stock):
+    data = yf.Ticker(selected_stock)
+    df = data.history(period="max")
+    df.reset_index(inplace=True)
+    value = df['Open'].values[-1]
+    return str(value)
+
+
+
+#Callback for High Values
+@app.callback(
+    Output('high', 'value'),
+    Input('stock-dropdown', 'value')
+)
+def update_output(selected_stock):
+    data = yf.Ticker(selected_stock)
+    df = data.history(period="max")
+    df.reset_index(inplace=True)
+    value = df['High'].values[-1]
+    return str(value)
+
+
+
+#Callback for Low Values
+@app.callback(
+    Output('low', 'value'),
+    Input('stock-dropdown', 'value')
+)
+def update_output(selected_stock):
+    data = yf.Ticker(selected_stock)
+    df = data.history(period="max")
+    df.reset_index(inplace=True)
+    value = df['Low'].values[-1]
+    return str(value)
+
+
+
+#Callback for Close Values
+@app.callback(
+    Output('close', 'value'),
+    Input('stock-dropdown', 'value')
+)
+def update_output(selected_stock):
+    data = yf.Ticker(selected_stock)
+    df = data.history(period="max")
+    df.reset_index(inplace=True)
+    value = df['Close'].values[-1]
+    return str(value)
+
+
+
+#Callback for Volume Values
+@app.callback(
+    Output('volume', 'value'),
+    Input('stock-dropdown', 'value')
+)
+def update_output(selected_stock):
+    data = yf.Ticker(selected_stock)
+    df = data.history(period="max")
+    df.reset_index(inplace=True)
+    value = df['Volume'].values[-1]
+    return str(value)
+
+
 #Run app
-app.run_server(debug=True)#True/sFalse
-
-
+app.run_server(debug=True)#True/False
